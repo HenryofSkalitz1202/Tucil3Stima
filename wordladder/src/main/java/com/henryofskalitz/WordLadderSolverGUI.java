@@ -16,7 +16,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -97,6 +96,10 @@ public class WordLadderSolverGUI extends Application {
     public static Set<String> findWordsWithLength(File fileName, int length) {
         Set<String> words = new HashSet<>();
         
+        if(fileName == null){
+            return null;
+        }
+
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -127,11 +130,13 @@ public class WordLadderSolverGUI extends Application {
         }
 
         // Print the words found
-        if (wordList.isEmpty()) {
-            System.out.println("No words found with length " + startWord.length());
+        if (wordList.isEmpty()){
+            resultTextArea.setText("No words found with length " + startWord.length());
+            return;
         }
         
         long startTime = System.nanoTime();
+        long startMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
         SearchResult result = null;
         if(selectedAlgorithm == "Uniform Cost Search (UCS)"){
             result = UniformCostSearch.findWithUCS(startWord, goalWord, wordList);
@@ -141,19 +146,28 @@ public class WordLadderSolverGUI extends Application {
             result = AStarSearch.findWithAStar(startWord, goalWord, wordList);
         }
         long endTime = System.nanoTime();
+        long afterMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
 
         long elapsedTimeInNanoseconds = endTime - startTime;
         double elapsedTimeInMilliseconds = (double) elapsedTimeInNanoseconds / 1_000_000;
+        long usedMemory = (afterMemory - startMemory);
+        
 
         // Extract the found path and visited words length from the result
         List<String> foundPath = result.getFoundPath();
         int visitedWordsLength = result.getVisitedWordsLength();
 
-        // Handle the result as needed, such as displaying it to the user
         String resultString = "Using " + selectedAlgorithm + "...\n";
-        resultString += String.join(" -> ", foundPath);
-        resultString += "\nVisited nodes: " + visitedWordsLength;
-        resultString += "\nExecution time: " + elapsedTimeInMilliseconds + "ms";
+        if(foundPath == null){
+            resultString += "No path found!";
+        }else{
+            // Handle the result as needed, such as displaying it to the user
+            resultString += String.join(" -> ", foundPath);
+            resultString += "\nVisited nodes: " + visitedWordsLength;
+            resultString += "\nExecution time: " + elapsedTimeInMilliseconds + " ms";
+            resultString += "\nUsed Memory: " + usedMemory / 8 + " bytes";
+        }
+        
         resultTextArea.setText(resultString);
     }
 }
