@@ -73,4 +73,29 @@ public class GreedyBestFirstSearch {
         // If no path is found, return an empty list
         return foundPath;
     }
+
+    private static class Node {
+        String word;
+        int cost;
+        Node parent;
+
+        Node(String word, int cost, Node parent) {
+            this.word = word;
+            this.cost = cost;
+            this.parent = parent;
+        }
+
+        // Getter and setter methods for word and cost
+        public String getWord() {
+            return word;
+        }
+
+        public int getCost() {
+            return cost;
+        }
+
+        public Node getParent() {
+            return parent;
+        }
+    }
 }

@@ -1,63 +1,71 @@
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.PriorityQueue;
-import java.util.Set;
+import java.util.*;
 
 public class UniformCostSearch {
-    private static boolean hasOneLetterDifference(String word1, String word2) {
-        if (word1.length() != word2.length()) {
-            return false;
-        }
 
-        int count = 0;
-        for (int i = 0; i < word1.length(); i++) {
-            if (word1.charAt(i) != word2.charAt(i)) {
-                count++;
-            }
-            if (count > 1) {
-                return false;
+    // Function to generate all possible words by changing one letter
+    private static List<String> generateWords(String word, Set<String> wordSet) {
+        String alphabet = "abcdefghijklmnopqrstuvwxyz";
+        List<String> words = new ArrayList<>();
+        for (int i = 0; i < word.length(); i++) {
+            for (char letter : alphabet.toCharArray()) {
+                String newWord = word.substring(0, i) + letter + word.substring(i + 1);
+                if (!newWord.equals(word) && wordSet.contains(newWord)) {
+                    words.add(newWord);
+                }
             }
         }
-
-        return count == 1;
+        return words;
     }
 
-    public static List<String> findWithUCS(String startWord, String goalWord, Set<String> dictionary) {
-        PriorityQueue<Node> priorityQueue = new PriorityQueue<>();
-        List<String> foundPath = new ArrayList<>();
-        Set<String> visitedWords = new HashSet<>();
+    // Function to perform uniform cost search
+    public static List<String> findWithUCS(String startWord, String endWord, Set<String> wordSet) {
+        if (startWord.equals(endWord)) {
+            List<String> ladder = new ArrayList<>();
+            ladder.add(startWord);
+            return ladder;
+        }
 
-        priorityQueue.add(new Node(startWord, 0, null));
+        Set<String> visited = new HashSet<>();
+        PriorityQueue<Node> queue = new PriorityQueue<>(Comparator.comparingInt(node -> node.cost));
+        queue.offer(new Node(startWord, 0, null));
 
-        while (!priorityQueue.isEmpty()) {
-            Node currentNode = priorityQueue.poll();
-            String currentWord = currentNode.getWord();
-            System.out.println(currentNode.getWord() + " " + currentNode.getCost());
+        while (!queue.isEmpty()) {
+            Node currentNode = queue.poll();
+            String currentWord = currentNode.word;
 
-            if (currentWord.equals(goalWord)) {
-                // Construct the found path
-                Node node = currentNode;
-                while (node != null) {
-                    foundPath.add(0, node.getWord()); // Add word at the beginning to maintain order
-                    node = node.getParent();
+            if (currentWord.equals(endWord)) {
+                List<String> ladder = new ArrayList<>();
+                while (currentNode != null) {
+                    ladder.add(0, currentNode.word);
+                    currentNode = currentNode.parent;
                 }
-                return foundPath;
+                return ladder;
             }
 
-            // Add current word to visited words
-            visitedWords.add(currentWord);
-
-            // Expand current node
-            for (String word : dictionary) {
-                if (hasOneLetterDifference(word, currentWord) && !visitedWords.contains(word)) {
-                    Node newNode = new Node(word, currentNode.getCost() + 1, currentNode);
-                    priorityQueue.add(newNode);
+            if (!visited.contains(currentWord)) {
+                visited.add(currentWord);
+                List<String> neighbors = generateWords(currentWord, wordSet);
+                for (String neighbor : neighbors) {
+                    if (!visited.contains(neighbor)) {
+                        queue.offer(new Node(neighbor, currentNode.cost + 1, currentNode));
+                    }
                 }
             }
         }
 
-        // If no path is found, return an empty list
-        return foundPath;
+        return null;
+    }
+
+    // Node class to represent word with its cost and parent
+    private static class Node {
+        String word;
+        int cost;
+        Node parent;
+
+        Node(String word, int cost, Node parent) {
+            this.word = word;
+            this.cost = cost;
+            this.parent = parent;
+        }
     }
 }
