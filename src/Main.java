@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.PriorityQueue;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -36,15 +35,17 @@ public class Main {
         }
         
         long startTime = System.nanoTime();
-        List<String> foundPath = GreedyBestFirstSearch.findWithGBFS(startWord, goalWord, wordsWithLength);
+        List<String> ladder = WordLadderSolver.findLadder(startWord, goalWord, wordsWithLength);
         long endTime = System.nanoTime();
         long elapsedTimeInNanoseconds = endTime - startTime;
         double elapsedTimeInMilliseconds = (double) elapsedTimeInNanoseconds / 1_000_000;
 
-        System.out.println("Found Path: ");
-        for(String word : foundPath){
-            System.out.println(word);
+        if (ladder != null) {
+            System.out.println(String.join(" -> ", ladder));
+        } else {
+            System.out.println("No ladder found.");
         }
+
         System.out.println("Execution time: " + elapsedTimeInMilliseconds + "ms");
 
         // boolean end = false;
