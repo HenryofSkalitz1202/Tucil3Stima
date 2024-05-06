@@ -5,22 +5,18 @@ import java.util.PriorityQueue;
 import java.util.Set;
 
 public class GreedyBestFirstSearch {
-    private static boolean hasOneLetterDifference(String word1, String word2) {
-        if (word1.length() != word2.length()) {
-            return false;
-        }
-
-        int count = 0;
-        for (int i = 0; i < word1.length(); i++) {
-            if (word1.charAt(i) != word2.charAt(i)) {
-                count++;
-            }
-            if (count > 1) {
-                return false;
+    private static List<String> generateWords(String word, Set<String> wordSet) {
+        String alphabet = "abcdefghijklmnopqrstuvwxyz";
+        List<String> words = new ArrayList<>();
+        for (int i = 0; i < word.length(); i++) {
+            for (char letter : alphabet.toCharArray()) {
+                String newWord = word.substring(0, i) + letter + word.substring(i + 1);
+                if (!newWord.equals(word) && wordSet.contains(newWord)) {
+                    words.add(newWord);
+                }
             }
         }
-
-        return count == 1;
+        return words;
     }
 
     private static int countLetterDifference(String word1, String word2){
@@ -49,7 +45,6 @@ public class GreedyBestFirstSearch {
         while (!priorityQueue.isEmpty()) {
             Node currentNode = priorityQueue.poll();
             String currentWord = currentNode.getWord();
-            System.out.println(currentNode.getWord() + " " + currentNode.getCost());
 
             if (currentWord.equals(goalWord)) {
                 // Construct the found path
@@ -64,10 +59,11 @@ public class GreedyBestFirstSearch {
             // Add current word to visited words
             visitedWords.add(currentWord);
 
-            // Expand current node
-            for (String word : dictionary) {
-                if (hasOneLetterDifference(word, currentWord) && !visitedWords.contains(word)){
-                    diff = countLetterDifference(word, goalWord);
+            // Generate neighboring words
+            List<String> neighbors = generateWords(currentWord, dictionary);
+            for (String word : neighbors) {
+                diff = countLetterDifference(word, goalWord);
+                if (!visitedWords.contains(word)) {
                     Node newNode = new Node(word, diff, currentNode);
                     priorityQueue.add(newNode);
                 }

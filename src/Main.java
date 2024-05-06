@@ -35,7 +35,7 @@ public class Main {
         }
         
         long startTime = System.nanoTime();
-        List<String> ladder = WordLadderSolver.findLadder(startWord, goalWord, wordsWithLength);
+        List<String> ladder = AStarSearch.findWithAStar(startWord, goalWord, wordsWithLength);
         long endTime = System.nanoTime();
         long elapsedTimeInNanoseconds = endTime - startTime;
         double elapsedTimeInMilliseconds = (double) elapsedTimeInNanoseconds / 1_000_000;
