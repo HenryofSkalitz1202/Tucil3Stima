@@ -76,7 +76,7 @@ public class GreedyBestFirstSearch {
         return new SearchResult(null, visitedWords.size());
     }
 
-    private static class Node {
+    private static class Node implements Comparable<Node> {
         String word;
         int cost;
         Node parent;
@@ -98,6 +98,11 @@ public class GreedyBestFirstSearch {
 
         public Node getParent() {
             return parent;
+        }
+
+        @Override
+        public int compareTo(Node other) {
+            return Integer.compare(cost, other.cost);
         }
     }
 }

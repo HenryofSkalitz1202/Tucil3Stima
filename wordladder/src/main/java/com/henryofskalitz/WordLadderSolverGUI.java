@@ -1,7 +1,5 @@
 package com.henryofskalitz;
 
-import java.util.Set;
-
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -11,7 +9,17 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class WordLadderSolverGUI extends Application {
 
@@ -19,6 +27,9 @@ public class WordLadderSolverGUI extends Application {
     private TextField endWordField;
     private ComboBox<String> algorithmComboBox;
     private TextArea resultTextArea;
+
+    private Set<String> wordList;
+    File selectedFile;
 
     public static void main(String[] args) {
         launch(args);
@@ -49,9 +60,13 @@ public class WordLadderSolverGUI extends Application {
         GridPane.setConstraints(algorithmLabel, 0, 2);
 
         algorithmComboBox = new ComboBox<>();
-        algorithmComboBox.getItems().addAll("Breadth First Search", "Depth First Search", "A* Search");
-        algorithmComboBox.setValue("Breadth First Search"); // Default selection
+        algorithmComboBox.getItems().addAll("Uniform Cost Search (UCS)", "Greedy Best First Search (GBFS)", "A* Search");
+        algorithmComboBox.setValue("Uniform Cost Search (UCS)"); // Default selection
         GridPane.setConstraints(algorithmComboBox, 1, 2);
+
+        Button uploadButton = new Button("Upload Dictionary");
+        GridPane.setConstraints(uploadButton, 0, 3);
+        uploadButton.setOnAction(e -> uploadDictionary());
 
         Button solveButton = new Button("Solve");
         GridPane.setConstraints(solveButton, 1, 3);
@@ -61,24 +76,84 @@ public class WordLadderSolverGUI extends Application {
         resultTextArea.setEditable(false);
         GridPane.setConstraints(resultTextArea, 0, 4, 2, 1);
 
-        gridPane.getChildren().addAll(startLabel, startWordField, endLabel, endWordField, algorithmLabel, algorithmComboBox, solveButton, resultTextArea);
+        gridPane.getChildren().addAll(startLabel, startWordField, endLabel, endWordField, algorithmLabel, algorithmComboBox, uploadButton, solveButton, resultTextArea);
 
         Scene scene = new Scene(gridPane, 400, 300);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
 
-    private void solve() {
+    private File uploadDictionary() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Upload Dictionary File");
+        selectedFile = fileChooser.showOpenDialog(null);
+        if (selectedFile != null) {
+            return selectedFile;
+        }else{
+            return null;
+        }
+    }
+
+    public static Set<String> findWordsWithLength(File fileName, int length) {
+        Set<String> words = new HashSet<>();
+        
+        try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] wordList = line.split("\\s+");
+                for (String word : wordList) {
+                    if (word.length() == length) {
+                        words.add(word);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading the file: " + e.getMessage());
+        }
+        
+        return words;
+    }
+
+    private void solve(){
         String startWord = startWordField.getText();
-        String endWord = endWordField.getText();
+        String goalWord = endWordField.getText();
         String selectedAlgorithm = algorithmComboBox.getValue();
 
-        int length = startWord.length();
+        wordList = findWordsWithLength(selectedFile, startWord.length());
+
+        if (wordList == null || wordList.isEmpty()) {
+            resultTextArea.setText("Please upload a dictionary first.");
+            return;
+        }
+
+        // Print the words found
+        if (wordList.isEmpty()) {
+            System.out.println("No words found with length " + startWord.length());
+        }
         
+        long startTime = System.nanoTime();
+        SearchResult result = null;
+        if(selectedAlgorithm == "Uniform Cost Search (UCS)"){
+            result = UniformCostSearch.findWithUCS(startWord, goalWord, wordList);
+        }else if(selectedAlgorithm == "Greedy Best First Search (GBFS)"){
+            result = GreedyBestFirstSearch.findWithGBFS(startWord, goalWord, wordList);
+        }else if(selectedAlgorithm == "A* Search"){
+            result = AStarSearch.findWithAStar(startWord, goalWord, wordList);
+        }
+        long endTime = System.nanoTime();
+
+        long elapsedTimeInNanoseconds = endTime - startTime;
+        double elapsedTimeInMilliseconds = (double) elapsedTimeInNanoseconds / 1_000_000;
+
+        // Extract the found path and visited words length from the result
+        List<String> foundPath = result.getFoundPath();
+        int visitedWordsLength = result.getVisitedWordsLength();
+
         // Handle the result as needed, such as displaying it to the user
-        String result = "Result will be shown here using " + selectedAlgorithm + "...";
-        resultTextArea.setText(result);
+        String resultString = "Using " + selectedAlgorithm + "...\n";
+        resultString += String.join(" -> ", foundPath);
+        resultString += "\nVisited nodes: " + visitedWordsLength;
+        resultString += "\nExecution time: " + elapsedTimeInMilliseconds + "ms";
+        resultTextArea.setText(resultString);
     }
 }
-
-
