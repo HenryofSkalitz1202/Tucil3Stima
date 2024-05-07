@@ -135,8 +135,10 @@ public class WordLadderSolverGUI extends Application {
             return;
         }
         
+        Runtime runtime = Runtime.getRuntime();
+        runtime.gc();
         long startTime = System.nanoTime();
-        long startMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+        long startMemory = runtime.totalMemory() - runtime.freeMemory();
         SearchResult result = null;
         if(selectedAlgorithm == "Uniform Cost Search (UCS)"){
             result = UniformCostSearch.findWithUCS(startWord, goalWord, wordList);
@@ -146,11 +148,11 @@ public class WordLadderSolverGUI extends Application {
             result = AStarSearch.findWithAStar(startWord, goalWord, wordList);
         }
         long endTime = System.nanoTime();
-        long afterMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+        long afterMemory = runtime.totalMemory() - runtime.freeMemory();
 
         long elapsedTimeInNanoseconds = endTime - startTime;
         double elapsedTimeInMilliseconds = (double) elapsedTimeInNanoseconds / 1_000_000;
-        long usedMemory = (afterMemory - startMemory);
+        long usedMemory = afterMemory - startMemory;
         
 
         // Extract the found path and visited words length from the result
@@ -162,6 +164,7 @@ public class WordLadderSolverGUI extends Application {
             resultString += "No path found!";
         }else{
             // Handle the result as needed, such as displaying it to the user
+            resultString += "\nPath length: " + foundPath.size() + "\n";
             resultString += String.join(" -> ", foundPath);
             resultString += "\nVisited nodes: " + visitedWordsLength;
             resultString += "\nExecution time: " + elapsedTimeInMilliseconds + " ms";
