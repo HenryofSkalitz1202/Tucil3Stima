@@ -64,8 +64,8 @@ With Visual Studio Code, you'll first need to build JavaFX project using Maven b
 You can find more info on the VSC documentation on [java-gui](https://code.visualstudio.com/docs/java/java-gui).
 
 ## Usage
-1. Run with VS Code
 ![alt-text](https://i.ibb.co/0VkM02x/Screenshot-Run.png)
+1. Run with VS Code
 2. Input start word
 3. Input goal word
 4. Choose algorithm
