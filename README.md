@@ -4,43 +4,77 @@ Word Ladder Solver with Uniform Cost Search (UCS), Greedy Best First Search (GBF
 ## Table of Contents
 
 - [General Info](#general-information)
+- [Technologies Used](#technologies-used)
 - [Requirements](#requirements)
+- [Features](#features)
 - [Setup](#setup)
 - [Usage](#usage)
-- [Reference](#reference)
 - [Author](#author)
 
 ## General Information
 
-The travelling salesman problem, also known as the travelling salesperson problem (TSP), asks the following question: "Given a list of cities and the distances between each pair of cities, what is the shortest possible route that visits each city exactly once and returns to the origin city?" It is an NP-hard problem in combinatorial optimization, important in theoretical computer science and operations research. 
+Word ladder (also known as Doublets, word-links, change-the-word puzzles, paragrams, laddergrams, or word golf) is a word game invented by Lewis Carroll. A word ladder puzzle begins with two words, and to solve the puzzle one must find a chain of other words to link the two, in which two adjacent words (that is, words in successive steps) differ by one letter.
 
-TSP can be modeled as an undirected weighted graph, such that cities are the graph's vertices, paths are the graph's edges, and a path's distance is the edge's weight. It is a minimization problem starting and finishing at a specified vertex after having visited each other vertex exactly once. Often, the model is a complete graph (i.e., each pair of vertices is connected by an edge). If no path exists between two cities, then adding a sufficiently long edge will complete the graph without affecting the optimal tour. 
-  
+How to play?
+
+The player is given a start word and an end word. In order to win the game, the player must change the start word into the end word progressively, creating an existing word at each step. Each step consists of a single letter substitution. For example, the following are the seven shortest solutions to the word ladder puzzle between words "cold" and "warm", using words from Collins Scrabble Words.
+
+    COLD 	→ 	CORD 	→ 	CORM 	→ 	WORM 	→ 	WARM
+
+    COLD 	→ 	CORD 	→ 	CARD 	→ 	WARD 	→ 	WARM
+
+    COLD 	→ 	CORD 	→ 	WORD 	→ 	WARD 	→ 	WARM
+
+    COLD 	→ 	CORD 	→ 	WORD 	→ 	WORM 	→ 	WARM
+
+    COLD 	→ 	WOLD 	→ 	WORD 	→ 	WORM 	→ 	WARM
+
+    COLD 	→ 	WOLD 	→ 	WORD 	→ 	WARD 	→ 	WARM
+
+    COLD 	→ 	WOLD 	→ 	WALD 	→ 	WARD 	→ 	WARM 
+
+As each step changes only one letter, the number of steps must be at least the Hamming distance between the two words – four in the above example. Lewis Carroll's example has an extra fifth step as the third letter changes twice.
+
+Often, word ladder puzzles are created where the end word has some kind of relationship with the start word (synonymous, antonymous, semantic...). This was also the way the game was originally devised by Lewis Carroll when it first appeared in Vanity Fair
+
+## Technologies Used
+
+- java 21 2023-09-19 LTS
+- Java(TM) SE Runtime Environment (build 21+35-LTS-2513)
+- Apache Maven
+
+## Features
+
+- Uniform Cost Search (UCS) Algorithm
+- Greedy Best First Search (GBFS) Algorithm
+- A\* Search Algorithm
+
 ## Requirements
 
-- Rustc 1.78.0
+- java version "22.0.1" 2024-04-16
+- Java(TM) SE Runtime Environment (build 22.0.1+8-16)
+- Windows
+- Linux
 - Visual Studio Code
 
 ## Setup
 
-First of all, you'll first need to make sure that you have installed [Rust](https://rustup.rs/) and [WSL](https://learn.microsoft.com/en-us/windows/wsl/install). 
+With Visual Studio Code, you'll first need to build JavaFX project using Maven by pressing `CTRL +SHIFT + P` and select `Java: Create Java Project`. Then, select `JavaFX` which is provided by Maven. Lastly, simply configure your project as configured in the repository.
 
-![rust-extension](https://i.ibb.co/RhhF7Xz/rustextension.jpg)
-
-Then, install the Rust extension above for setting up in VS Code
-
-You can find more info on the VSC documentation on [rust](https://code.visualstudio.com/docs/languages/rust).
+You can find more info on the VSC documentation on [java-gui](https://code.visualstudio.com/docs/java/java-gui).
 
 ## Usage
-1. Run `wsl` in terminal to activate Windows Subsystem for Linux (WSL)
-1. Navigate to the directory where the project will be stored
-2. Run `git clone https://github.com/HenryofSkalitz1202/TSP.git` in terminal
-4. Run `cargo build`
-5. Run `cargo run`
-6. Input the path to the txt file
+![alt-text](https://i.ibb.co/0VkM02x/Screenshot-Run.png)
+1. Run with VS Code
+2. Input start word
+3. Input goal word
+4. Choose algorithm
+5. Upload the dictionary file
+6. Press the `solve` button
 
 # Reference
-The project is inspired from the following [tutorial](https://www.tutorialspoint.com/data_structures_algorithms/travelling_salesman_problem_dynamic_programming.htm)
+
+The dictionary that is used as reference is taken from the following  [repository](https://github.com/dwyl/english-words/blob/master/words.txt) and is also available on the test directory.
 
 # Author
 |          Name                | NIM |
